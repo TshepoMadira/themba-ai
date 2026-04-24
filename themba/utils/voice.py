@@ -1,25 +1,32 @@
+import asyncio
 import os
-from gtts import gTTS
-import pygame
 import tempfile
-import time
+import pygame
+import edge_tts
 
-def speak(text: str):
-    """Convert text to speech and play it"""
+VOICE = "en-US-GuyNeural"  # Deep natural male voice
+
+async def _speak_async(text: str):
+    """Async function to generate and play speech"""
     try:
-        tts = gTTS(text=text, lang='en', slow=False)
+        communicate = edge_tts.Communicate(text, VOICE)
         with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as f:
             temp_file = f.name
-        tts.save(temp_file)
+        
+        await communicate.save(temp_file)
         
         pygame.mixer.init()
         pygame.mixer.music.load(temp_file)
         pygame.mixer.music.play()
         
         while pygame.mixer.music.get_busy():
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
         
         pygame.mixer.quit()
         os.unlink(temp_file)
     except Exception as e:
         print(f"[Voice error: {e}]")
+
+def speak(text: str):
+    """Convert text to speech using Edge TTS"""
+    asyncio.run(_speak_async(text))
