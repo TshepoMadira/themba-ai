@@ -1,0 +1,13 @@
+# Core
+openai>=1.0.0
+python-dotenv
+
+# For better LLM support (optional but recommended)
+groq
+anthropic
+google-generativeai
+
+# Future voice & tools
+requests
+rich
+colorama
