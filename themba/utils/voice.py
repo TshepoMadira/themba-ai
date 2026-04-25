@@ -31,17 +31,22 @@ def speak(text: str):
 def listen() -> str:
     """Listen to microphone and return text"""
     r = sr.Recognizer()
+    r.energy_threshold = 300
+    r.dynamic_energy_threshold = True
     with sr.Microphone() as source:
-        print("🎤 Listening...")
-        r.adjust_for_ambient_noise(source, duration=0.5)
+        print("🎤 Listening... (speak now)")
+        r.adjust_for_ambient_noise(source, duration=1)
         try:
-            audio = r.listen(source, timeout=5, phrase_time_limit=10)
+            audio = r.listen(source, timeout=8, phrase_time_limit=15)
+            print("Processing...")
             text = r.recognize_google(audio)
             print(f"You said: {text}")
             return text
         except sr.WaitTimeoutError:
+            print("Timeout - didn't hear anything")
             return ""
         except sr.UnknownValueError:
+            print("Couldn't understand audio")
             return ""
         except Exception as e:
             print(f"[Listen error: {e}]")
