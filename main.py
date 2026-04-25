@@ -1,5 +1,5 @@
 from themba.core.themba import Themba
-from themba.utils.voice import speak
+from themba.utils.voice import speak, listen
 from themba.skills.memory import clear_memory
 
 def main():
@@ -9,23 +9,29 @@ def main():
     greeting = themba.greet()
     print(greeting)
     speak(greeting)
-    print("Type 'exit' to quit or 'forget' to clear memory.\n")
+    print("Type or SPEAK to Themba. Type 'exit' to quit or 'forget' to clear memory.\n")
 
     while True:
         try:
-            user_input = input("You: ").strip()
+            mode = input("Input mode - press ENTER to type, or type 'voice' to speak: ").strip().lower()
 
-            if user_input.lower() in ['exit', 'quit', 'bye', 'goodbye']:
+            if mode == 'voice':
+                user_input = listen()
+                if not user_input:
+                    print("Didn't catch that, try again.\n")
+                    continue
+            elif mode in ['exit', 'quit', 'bye', 'goodbye']:
                 farewell = "Goodbye sir. It was a pleasure assisting you."
                 print(f"Themba: {farewell}")
                 speak(farewell)
                 break
-
-            if user_input.lower() == 'forget':
+            elif mode == 'forget':
                 clear_memory()
                 themba.history = []
                 print("Themba: Memory cleared, sir. Fresh start.\n")
                 continue
+            else:
+                user_input = mode if mode else input("You: ").strip()
 
             if not user_input:
                 continue
